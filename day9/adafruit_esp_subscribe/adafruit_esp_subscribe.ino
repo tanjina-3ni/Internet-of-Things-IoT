@@ -27,10 +27,7 @@
 
 // Create an ESP8266 WiFiClient class to connect to the MQTT server.
 WiFiClient client;
-// or... use WiFiFlientSecure for SSL
-//WiFiClientSecure client;
 
-// Setup the MQTT client class by passing in the WiFi client and MQTT server and login details.
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_USERNAME, AIO_KEY);
 
 /****************************** Feeds ***************************************/
