@@ -1,0 +1,55 @@
+from PyQt5.QtWidgets import QMainWindow,QApplication,QAction
+from PyQt5.QtGui import QIcon
+import sys
+
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON="icon.jpg"
+        self.TITLE="ROBO Science LAB"
+        self.TOP = 100
+        self.LEFT = 100
+        self.WIDTH = 700
+        self.HEIGHT = 500
+
+        self.InitWindow()
+        self.UImenubar()
+        self.show()
+
+    def InitWindow(self):
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setWindowTitle(self.TITLE)
+        self.setGeometry(self.TOP,self.LEFT,self.WIDTH,self.HEIGHT)
+
+    def UImenubar(self):
+        MENUBAR=self.menuBar()
+        FileMenu=MENUBAR.addMenu("File")
+        EditMenu=MENUBAR.addMenu("Edit")
+        ViewMenu=MENUBAR.addMenu("View")
+
+        NewProjectAction=QAction("New Project...",self)
+
+        NewAction = QAction("New...",self)
+        NewAction.setShortcut("Alt+Insert")
+
+        NewScratchFileAction=QAction("New Scratch File",self)
+        NewScratchFileAction.setShortcut("Ctrl+Alt+Shift+Insert")
+
+        ExitAction=QAction("Exit",self)
+        ExitAction.triggered.connect(self.Exit_Action)
+
+        FileMenu.addAction(NewProjectAction)
+        FileMenu.addAction(NewAction)
+        FileMenu.addAction(NewScratchFileAction)
+        FileMenu.addAction(ExitAction)
+
+    def Exit_Action(self):
+        sys.exit()
+
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    window=Window()
+    sys.exit(App.exec())

@@ -1,0 +1,63 @@
+from PyQt5.QtWidgets import QMainWindow,QWidget,QApplication,QVBoxLayout,QDial,QLabel
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
+import sys
+
+
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON="icon.jpg"
+        self.TITLE="ROBO Science LAB"
+        self.TOP = 100
+        self.LEFT = 100
+        self.WIDTH = 700
+        self.HEIGHT = 500
+
+        self.InitWindow()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+    def InitWindow(self):
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setWindowTitle(self.TITLE)
+        self.setGeometry(self.TOP,self.LEFT,self.WIDTH,self.HEIGHT)
+
+
+class ComponentManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.UIcomponent()
+
+    def UIcomponent(self):
+        vbox = QVBoxLayout()
+        self.dial = QDial()
+        self.dial.setStyleSheet("background:red")
+        self.dial.setMaximumSize(200,200)
+        self.dial.setNotchesVisible(True)
+        self.dial.setNotchTarget(100)
+        self.dial.setMinimum(0)
+        self.dial.setMaximum(500)
+        self.dial.valueChanged.connect(self.DialValueChange)
+
+        self.label=QLabel("Dial value= 0")
+        self.label.setStyleSheet("font-size:26px;margin-left:200px")
+        self.label.setAlignment(Qt.AlignCenter)
+
+        vbox.addWidget(self.dial)
+        vbox.addWidget(self.label)
+        self.setLayout(vbox)
+
+    def DialValueChange(self):
+        SENDER=self.sender()
+        self.label.setText("Dial value= " + str(SENDER.value()))
+
+
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    window=Window()
+    sys.exit(App.exec())

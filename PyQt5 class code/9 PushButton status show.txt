@@ -1,0 +1,58 @@
+from PyQt5.QtWidgets import QMainWindow,QApplication,QWidget,QPushButton
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize
+import sys
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON = "icon.jpg"
+        self.TITLE="RUET"
+        self.X_start=200
+        self.Y_start =200
+        self.WIDTH=400
+        self.HEIGHT=200
+
+        self.INIT_WINDOW()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+    def INIT_WINDOW(self):
+        self.setWindowTitle(self.TITLE)
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setGeometry(self.X_start,self.Y_start,self.WIDTH,self.HEIGHT)
+        self.resize(800, 200)
+        self.setFixedSize(self.size())
+
+
+class ComponentManagement(QMainWindow,QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON = "icon.jpg"
+        self.UIcomponent()
+
+    def UIcomponent(self):
+        self.Sbar=self.statusBar()
+        self.Sbar.showMessage("Ready")
+
+        BUTTON1 = QPushButton("Cricket", self)
+        BUTTON1.setGeometry(200, 50, 100, 50)
+        BUTTON1.clicked.connect(self.ButtonAction)
+
+        BUTTON2 = QPushButton("footbal", self)
+        BUTTON2.setGeometry(400,50, 100, 50)
+        BUTTON2.clicked.connect(self.ButtonAction)
+
+    def ButtonAction(self):
+        sender=self.sender()
+        self.Sbar.showMessage(sender.text() +" was pressed")
+
+
+
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    WINDOW=Window()
+    sys.exit(App.exec())

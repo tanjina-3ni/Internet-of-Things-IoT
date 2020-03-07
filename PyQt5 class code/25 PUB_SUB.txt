@@ -1,0 +1,189 @@
+from PyQt5.QtWidgets import QMainWindow, QApplication,QWidget,QHBoxLayout,QVBoxLayout,QScrollArea,QFormLayout,QLineEdit,QLabel
+from PyQt5.QtGui import QIcon
+from threading import Thread
+from PyQt5.QtCore import pyqtSignal
+import paho.mqtt.client as mqtt
+import os
+
+TOPIC_PUBLISH = "T/P"
+TOPIC_SUBSCRIBE = "T/S"
+PAYLOAD_PUBLISH = None
+PAYLOAD_SUBSCRIBE = None
+
+broker = ""
+port = 
+username = ""
+password = ""
+
+class WINDOW(QMainWindow):
+    def __init__(self):
+        super(WINDOW, self).__init__()
+
+        self.ICON = "icon.jpg"
+        self.TITLE = "RUET IoT Lab"
+        self.TOP = 100
+        self.LEFT = 100
+        self.WIDTH = 400
+        self.HIGHT = 100
+
+        self.initWindow()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+
+    def initWindow(self):
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setWindowTitle(self.TITLE)
+        self.setGeometry(self.TOP, self.LEFT, self.WIDTH, self.HIGHT)
+
+        self.resize(800, 200)
+        self.setFixedSize(self.size()) 
+
+
+class PUBLISH():
+    def __init__(self):
+        super().__init__()
+
+    def PUB(self):
+        global username, password,broker, port
+        self.client_p = mqtt.Client()
+        self.client_p.username_pw_set(username, password)
+        self.client_p.connect(broker, port)
+
+class SUBSCRIBE():
+
+    TIME_MACHINE=pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+    def SUB(self):
+        def on_connect(client, userdata, flags, rc):
+            print("Connected With Result Code " + rc)
+
+        def on_message(client, userdata, message):
+            global TOPIC_SUBSCRIBE,PAYLOAD_SUBSCRIBE
+            TOPIC_SUBSCRIBE=message.topic
+            PAYLOAD_SUBSCRIBE=message.payload.decode()
+
+            self.TIME_MACHINE.emit()
+
+
+
+        self.client_s = mqtt.Client()
+        self.client_s.username_pw_set(username, password)
+        self.client_s.on_connect = on_connect
+        self.client_s.on_message = on_message
+        self.client_s.connect(broker, port)
+
+        self.client_s.subscribe(TOPIC_SUBSCRIBE, qos=1)
+        self.client_s.loop_forever()
+
+class ComponentManagement(QWidget,SUBSCRIBE,PUBLISH):
+    def __init__(self):
+        super().__init__()
+
+        self.UIcomponent()
+        self.Thread_Control()
+
+    def UIcomponent(self):
+        HBOX = QHBoxLayout()
+        VBOX1 = QVBoxLayout()
+        VBOX2 = QVBoxLayout()
+
+        #-------------VBOX1 start---------------------------
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setStyleSheet("background:white")
+        self.scroll_widget = QWidget()
+        self.scroll_formlayout = QFormLayout()
+
+        self.scroll_widget.setLayout(self.scroll_formlayout)
+        self.scroll_area.setWidget(self.scroll_widget)
+        self.scroll_area.setWidgetResizable(True)
+        # self.scroll_area.setViewportMargins(50, 50, 50, 30)
+
+
+        self.Lineedit =QLineEdit()
+        self.Lineedit.setStyleSheet("background:#9DD6DD")
+        self.Lineedit.setPlaceholderText("Write your message")
+        self.Lineedit.returnPressed.connect(self.setLineEditDataToArea)
+
+        VBOX1.addWidget(self.scroll_area)
+        VBOX1.addWidget(self.Lineedit)
+        # -------------VBOX1 end---------------------------
+
+
+        # -------------VBOX2 start-------------------------
+        self.Label21= QLabel("Your Name: "+TOPIC_SUBSCRIBE)
+        self.Label21.setStyleSheet("font-weight:bold;font-size:16px;color:#0046FF")
+        self.Lineedit21= QLineEdit()
+        self.Lineedit21.setPlaceholderText("Write your name here")
+        self.Lineedit21.setStyleSheet("background:#FFB59F")
+        self.Lineedit21.setMaximumWidth(200)
+        self.Lineedit21.returnPressed.connect(lambda: self.NameTopicSet("Your_Name"))
+
+        self.Label22 = QLabel("Friend Name: "+TOPIC_PUBLISH)
+        self.Label22.setStyleSheet("font-weight:bold;font-size:16px;color:#0046FF")
+        self.Lineedit22 = QLineEdit()
+        self.Lineedit22.setPlaceholderText("Write friend name here")
+        self.Lineedit22.setStyleSheet("background:#FFB59F")
+        self.Lineedit22.setMaximumWidth(200)
+        self.Lineedit22.returnPressed.connect(lambda: self.NameTopicSet("Friend_Name"))
+
+        VBOX2.addStretch()
+        VBOX2.addWidget(self.Label21)
+        VBOX2.addWidget(self.Lineedit21)
+        VBOX2.addSpacing(50)
+        VBOX2.addWidget(self.Label22)
+        VBOX2.addWidget(self.Lineedit22)
+        # -------------VBOX2 end---------------------------
+
+        HBOX.addLayout(VBOX1)
+        HBOX.addLayout(VBOX2)
+        self.setLayout(HBOX)
+        ###------------- ALL Method of ComponentManagement ---------------###
+        self.TIME_MACHINE.connect(self.messageToArea)
+
+    def NameTopicSet(self, IDENTITY):
+        global TOPIC_PUBLISH, TOPIC_SUBSCRIBE
+
+        SENDER = self.sender()
+
+        if IDENTITY == "Your_Name":
+            self.client_s.unsubscribe(TOPIC_SUBSCRIBE)
+            TOPIC_SUBSCRIBE = SENDER.text()
+            self.client_s.subscribe(TOPIC_SUBSCRIBE, qos=1)
+            self.Label21.setText("Your Name: " + TOPIC_SUBSCRIBE)
+            self.Lineedit21.clear()
+
+        elif IDENTITY == "Friend_Name":
+            TOPIC_PUBLISH = SENDER.text()
+            self.Label22.setText("Friend Name: " + TOPIC_PUBLISH)
+            self.Lineedit22.clear()
+
+    def messageToArea(self):
+        global TOPIC_PUBLISH,PAYLOAD_SUBSCRIBE
+        self.scroll_formlayout.addRow(QLabel(TOPIC_PUBLISH + ": " + PAYLOAD_SUBSCRIBE))
+
+    def setLineEditDataToArea(self):
+        global TOPIC_PUBLISH, PAYLOAD_PUBLISH, TOPIC_SUBSCRIBE
+        PAYLOAD_PUBLISH = self.Lineedit.text()
+        self.Lineedit.clear()
+
+        self.scroll_formlayout.addRow(QLabel(TOPIC_SUBSCRIBE+": "+PAYLOAD_PUBLISH))
+        self.client_p.publish(topic=TOPIC_PUBLISH, payload=PAYLOAD_PUBLISH)
+        v=self.scroll_area.verticalScrollBar().maximum()
+        self.scroll_area.verticalScrollBar().setValue(v)  
+
+
+    def Thread_Control(self):
+        self.t1 = Thread(target=self.PUB)
+        self.t2 = Thread(target=self.SUB)
+        self.t1.start()
+        self.t2.start()
+
+
+if __name__ == "__main__":
+    App = QApplication(sys.argv)
+    window = WINDOW()
+    os._exit(App.exec())  

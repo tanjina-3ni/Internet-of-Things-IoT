@@ -1,0 +1,42 @@
+from threading import Thread
+import paho.mqtt.client as mqtt
+import time
+
+broker = ""
+port = 
+username = ""
+password = ""
+
+def PUBLISH():
+    client_p = mqtt.Client()
+    client_p.username_pw_set(username, password)
+    client_p.connect(broker, port)
+
+    while 1 == 1:
+        client_p.publish(topic="ROOM/Temperature", payload=25.5)
+        time.sleep(3)
+
+def SUBSCRIBE():
+
+    def on_connect(client, userdata, flags, rc):
+        print("Connected With Result Code " + rc)
+
+    def on_message(client, userdata, message):
+        print(message.topic + "=" + message.payload.decode())
+
+    client_s = mqtt.Client()
+    client_s.username_pw_set(username, password)
+    client_s.on_connect = on_connect
+    client_s.on_message = on_message
+    client_s.connect(broker, port)
+
+    client_s.subscribe("ROOM/Temperature", qos=1)
+    client_s.subscribe("ROOM/Humidity", qos=1)
+    client_s.loop_forever()
+
+
+t1=Thread(target=SUBSCRIBE)
+t2=Thread(target=PUBLISH)
+
+t1.start()
+t2.start()

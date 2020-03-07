@@ -1,0 +1,52 @@
+from PyQt5.QtWidgets import QMainWindow,QApplication,QWidget,QPushButton
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QRect,QSize
+import sys
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON = "icon.jpg"
+        self.TITLE="RUET"
+        self.X_start=200
+        self.Y_start =200
+        self.WIDTH=400
+        self.HEIGHT=200
+
+        self.INIT_WINDOW()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+    def INIT_WINDOW(self):
+        self.setWindowTitle(self.TITLE)
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setGeometry(self.X_start,self.Y_start,self.WIDTH,self.HEIGHT)
+        self.resize(800, 200)
+        self.setFixedSize(self.size())
+
+
+class ComponentManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON = "Bicon1.png"
+        self.UIcomponent()
+
+    def UIcomponent(self):
+
+        BUTTON = QPushButton("click me", self)
+        BUTTON.setGeometry(QRect(200, 20, 200, 100))
+        BUTTON.setIcon(QIcon(self.ICON))
+        BUTTON.setIconSize(QSize(70,70))
+        BUTTON.setStyleSheet("background:#FFEE8F;color:red;font-weight:bold;font-size:16px")
+
+        BUTTON.clicked.connect(self.ButtonAction)
+
+    def ButtonAction(self):
+        sys.exit()
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    WINDOW=Window()
+    sys.exit(App.exec())

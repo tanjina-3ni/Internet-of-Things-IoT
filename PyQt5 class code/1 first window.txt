@@ -1,0 +1,28 @@
+from PyQt5.QtWidgets import QMainWindow,QApplication
+import sys
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+   
+        self.TITLE="RUET"
+        self.X_start=200
+        self.Y_start =200
+        self.WIDTH=400
+        self.HEIGHT=200
+
+        self.INIT_WINDOW()
+        self.show()
+
+    def INIT_WINDOW(self):
+        self.setWindowTitle(self.TITLE)
+        self.setGeometry(self.X_start,self.Y_start,self.WIDTH,self.HEIGHT)
+        self.resize(800, 200)
+        self.setFixedSize(self.size())
+
+
+if __name__=="__main__":
+    #print(__name__)
+    App=QApplication(sys.argv)
+    WINDOW=Window()
+    sys.exit(App.exec())

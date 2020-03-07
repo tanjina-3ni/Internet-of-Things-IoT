@@ -1,0 +1,63 @@
+from PyQt5.QtWidgets import QMainWindow,QWidget,QApplication,QVBoxLayout,QLCDNumber,QPushButton
+from PyQt5.QtGui import QIcon
+from random import randint
+import sys
+
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON="icon.jpg"
+        self.TITLE="ROBO Science LAB"
+        self.TOP = 100
+        self.LEFT = 100
+        self.WIDTH = 700
+        self.HEIGHT = 500
+
+        self.InitWindow()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+    def InitWindow(self):
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setWindowTitle(self.TITLE)
+        self.setGeometry(self.TOP,self.LEFT,self.WIDTH,self.HEIGHT)
+
+
+class ComponentManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.UIcomponent()
+
+    def UIcomponent(self):
+
+        VBOX=QVBoxLayout()
+
+        self.LCD=QLCDNumber()
+        self.LCD.setMinimumHeight(100)
+        self.LCD.setStyleSheet("background:#BBFF86")
+        self.LCD.display(111)
+
+        BUTTON=QPushButton("Click me",self)
+        BUTTON.setStyleSheet("background:#FFBC60 ")
+        BUTTON.clicked.connect(self.DisplayValue)
+
+        VBOX.addWidget(self.LCD)
+        VBOX.addWidget(BUTTON)
+        VBOX.addStretch()
+
+        self.setLayout(VBOX)
+
+    def DisplayValue(self):
+        RANDOM=randint(1,20)
+        self.LCD.display(RANDOM)
+
+
+
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    window=Window()
+    sys.exit(App.exec())

@@ -1,0 +1,60 @@
+from PyQt5.QtWidgets import QMainWindow,QWidget,QApplication,QSlider,QHBoxLayout,QLabel
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
+import sys
+
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON="icon.jpg"
+        self.TITLE="ROBO Science LAB"
+        self.TOP = 100
+        self.LEFT = 100
+        self.WIDTH = 700
+        self.HEIGHT = 500
+
+        self.InitWindow()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+    def InitWindow(self):
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setWindowTitle(self.TITLE)
+        self.setGeometry(self.TOP,self.LEFT,self.WIDTH,self.HEIGHT)
+
+
+class ComponentManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.UIcomponent()
+
+    def UIcomponent(self):
+        HBOX=QHBoxLayout()
+
+        self.SLIDER=QSlider()
+        self.SLIDER.setOrientation(Qt.Horizontal)
+        self.SLIDER.setTickPosition(QSlider.TicksBelow)
+        self.SLIDER.setTickInterval(100)
+        self.SLIDER.setMinimum(0)
+        self.SLIDER.setMaximum(1024)
+        self.SLIDER.valueChanged.connect(self.SliderAction)
+
+        self.LABEL=QLabel("0")
+        self.LABEL.setStyleSheet("font-size:26px")
+
+        HBOX.addWidget(self.SLIDER)
+        HBOX.addWidget(self.LABEL)
+        self.setLayout(HBOX)
+
+    def SliderAction(self):
+        SENDER=self.sender()
+        self.LABEL.setText(str(SENDER.value()))
+
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    window=Window()
+    sys.exit(App.exec())

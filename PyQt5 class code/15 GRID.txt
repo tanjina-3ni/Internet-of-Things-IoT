@@ -1,0 +1,60 @@
+from PyQt5.QtWidgets import QMainWindow,QApplication,QWidget,QPushButton,QGridLayout
+from PyQt5.QtGui import QIcon
+import sys
+
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ICON = "icon.jpg"
+        self.TITLE="RUET"
+        self.X_start=200
+        self.Y_start =200
+        self.WIDTH=400
+        self.HEIGHT=200
+
+        self.INIT_WINDOW()
+        self.setCentralWidget(ComponentManagement())
+        self.show()
+
+    def INIT_WINDOW(self):
+        self.setWindowTitle(self.TITLE)
+        self.setWindowIcon(QIcon(self.ICON))
+        self.setGeometry(self.X_start,self.Y_start,self.WIDTH,self.HEIGHT)
+        self.resize(800, 200)
+        self.setFixedSize(self.size())
+
+
+class ComponentManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.UIcomponent()
+
+    def UIcomponent(self):
+        GRID=QGridLayout()
+
+
+        BUTTON_11 = QPushButton("Button L1",self)
+        BUTTON_12 = QPushButton("Button L2", self)
+        BUTTON_13 = QPushButton("Button L3", self)
+
+        BUTTON_21 = QPushButton("Button R1", self)
+        BUTTON_22 = QPushButton("Button R2", self)
+        BUTTON_23 = QPushButton("Button R3", self)
+
+        GRID.addWidget(BUTTON_11, 0, 0)
+        GRID.addWidget(BUTTON_12, 0, 1)
+        GRID.addWidget(BUTTON_13, 1, 0)
+        GRID.addWidget(BUTTON_21, 1, 1)
+        GRID.addWidget(BUTTON_22, 2, 0)
+        GRID.addWidget(BUTTON_23, 2, 1)
+
+        self.setLayout(GRID)
+
+
+
+if __name__=="__main__":
+    App=QApplication(sys.argv)
+    WINDOW=Window()
+    sys.exit(App.exec())
